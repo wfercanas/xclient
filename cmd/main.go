@@ -9,10 +9,12 @@ import (
 	"os"
 
 	_ "github.com/lib/pq"
+	"github.com/selsa-inube/iclient-query-service/internal/model"
 )
 
 type application struct {
-	Logger *slog.Logger
+	Logger       *slog.Logger
+	Contribution *model.ContributionModel
 }
 
 func main() {
@@ -29,13 +31,15 @@ func main() {
 	defer db.Close()
 
 	app := &application{
-		Logger: logger,
+		Logger:       logger,
+		Contribution: &model.ContributionModel{DB: db},
 	}
 
 	app.Logger.Info("starting server", slog.String("addr", *addr))
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", health)
+	mux.HandleFunc("GET /contributions/{id}", app.getContributionById)
 
 	err = http.ListenAndServe(*addr, mux)
 	if err != nil {
