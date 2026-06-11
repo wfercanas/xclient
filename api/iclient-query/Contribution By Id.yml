@@ -8,7 +8,7 @@ http:
   url: "{{baseURL}}/contributions/:id"
   params:
     - name: id
-      value: "1234"
+      value: 200-1006434207
       type: path
   auth: inherit
 
