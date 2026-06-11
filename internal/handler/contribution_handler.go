@@ -17,10 +17,16 @@ func GetContributionById(app *config.Application) http.HandlerFunc {
 			return
 		}
 
+		dtoBeneficiaries := make([]dto.ContributionBeneficiary, len(contribution.Beneficiaries))
+		for i, b := range contribution.Beneficiaries {
+			dtoBeneficiaries[i] = dto.ContributionBeneficiary(b)
+		}
+
 		response := &dto.Contribution{
-			ContributionName: contribution.ProductDescription,
-			ContributionId:   contribution.ProductNumber,
-			Balance:          contribution.BalanceSavings,
+			ContributionName:          contribution.ProductDescription,
+			ContributionId:            contribution.ProductNumber,
+			Balance:                   contribution.BalanceSavings,
+			ContributionBeneficiaries: dtoBeneficiaries,
 		}
 
 		w.Header().Set("Content-Type", "application/json")
