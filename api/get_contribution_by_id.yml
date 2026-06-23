@@ -1,5 +1,5 @@
 info:
-  name: Contribution By Id
+  name: get_contribution_by_id
   type: http
   seq: 2
 
