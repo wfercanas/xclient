@@ -15,7 +15,7 @@ import (
 
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP Address")
-	dsn := flag.String("dsn", "user=iclient password=iclient host=localhost port=5432 dbname=iclient sslmode=disable", "Data Source Name")
+	dsn := flag.String("dsn", "user=fernando password=Sparkie11 host=localhost port=5432 dbname=xclient sslmode=disable", "Data Source Name")
 	flag.Parse()
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
@@ -32,6 +32,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", handler.Health)
 	mux.HandleFunc("GET /contributions/{id}", handler.GetContributionById(&app))
+	mux.HandleFunc("POST /tenants", handler.CreateNewTenant(&app))
 
 	err = http.ListenAndServe(*addr, mux)
 	if err != nil {
