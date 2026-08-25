@@ -34,3 +34,16 @@ func (m *TenantModel) Create(newTenant NewTenant) (Tenant, error) {
 
 	return tenant, nil
 }
+
+func (m *TenantModel) Delete(id int) error {
+	_, err := m.DB.Exec(`
+		DELETE FROM tenants
+		WHERE id = $1
+	`, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

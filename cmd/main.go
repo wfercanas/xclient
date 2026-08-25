@@ -32,7 +32,9 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", handler.Health)
 	mux.HandleFunc("GET /contributions/{id}", handler.GetContributionById(&app))
+
 	mux.HandleFunc("POST /tenants", handler.CreateNewTenant(&app))
+	mux.HandleFunc("DELETE /tenants/{id}", handler.DeleteTenant(&app))
 
 	err = http.ListenAndServe(*addr, mux)
 	if err != nil {
