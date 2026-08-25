@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -33,6 +34,34 @@ func (m *TenantModel) Create(newTenant NewTenant) (Tenant, error) {
 	}
 
 	return tenant, nil
+}
+
+func (m *TenantModel) GetAll() ([]Tenant, error) {
+	results, err := m.DB.Query(`
+		SELECT id, name, created_at
+		FROM tenants
+	`)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, sql.ErrNoRows
+		} else {
+			return nil, err
+		}
+	}
+
+	var tenants []Tenant
+	for results.Next() {
+		var tenant Tenant
+
+		err := results.Scan(&tenant.Id, &tenant.Name, &tenant.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		tenants = append(tenants, tenant)
+	}
+
+	return tenants, nil
 }
 
 func (m *TenantModel) GetById(id int) (Tenant, error) {

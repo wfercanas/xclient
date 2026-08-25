@@ -33,6 +33,29 @@ func CreateNewTenant(app *config.Application) http.HandlerFunc {
 	}
 }
 
+func GetTenants(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tenants, err := app.Tenant.GetAll()
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+				return
+			} else {
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		tenantsDTO := make([]dto.Tenant, len(tenants))
+		for i, tenant := range tenants {
+			tenantsDTO[i] = dto.Tenant(tenant)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(tenantsDTO)
+	}
+}
+
 func GetTenantById(app *config.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tenantId, err := strconv.Atoi(r.PathValue("id"))
