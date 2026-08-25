@@ -34,6 +34,7 @@ func main() {
 	mux.HandleFunc("GET /contributions/{id}", handler.GetContributionById(&app))
 
 	mux.HandleFunc("POST /tenants", handler.CreateNewTenant(&app))
+	mux.HandleFunc("GET /tenants/{id}", handler.GetTenantById(&app))
 	mux.HandleFunc("DELETE /tenants/{id}", handler.DeleteTenant(&app))
 
 	err = http.ListenAndServe(*addr, mux)

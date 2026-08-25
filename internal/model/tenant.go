@@ -35,6 +35,22 @@ func (m *TenantModel) Create(newTenant NewTenant) (Tenant, error) {
 	return tenant, nil
 }
 
+func (m *TenantModel) Get(id int) (Tenant, error) {
+	result := m.DB.QueryRow(`
+		SELECT id, name, created_at
+		FROM tenants
+		WHERE id = $1
+	`, id)
+
+	var tenant Tenant
+	err := result.Scan(&tenant.Id, &tenant.Name, &tenant.CreatedAt)
+	if err != nil {
+		return Tenant{}, err
+	}
+
+	return tenant, nil
+}
+
 func (m *TenantModel) Delete(id int) error {
 	_, err := m.DB.Exec(`
 		DELETE FROM tenants

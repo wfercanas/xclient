@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -26,7 +28,30 @@ func CreateNewTenant(app *config.Application) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "appliation/json")
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(dto.Tenant(tenant))
+	}
+}
+
+func GetTenantById(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tenantId, err := strconv.Atoi(r.PathValue("id"))
+		if err != nil {
+			http.Error(w, "invalid tenant id", http.StatusBadRequest)
+			return
+		}
+
+		tenant, err := app.Tenant.Get(tenantId)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			} else {
+				http.Error(w, "failed to get tenant", http.StatusInternalServerError)
+			}
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(dto.Tenant(tenant))
 	}
 }
