@@ -35,7 +35,21 @@ func CreateNewTenant(app *config.Application) http.HandlerFunc {
 
 func GetTenants(app *config.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tenants, err := app.Tenant.GetAll()
+		params := r.URL.Query()
+		idStr := params.Get("id")
+		name := params.Get("name")
+
+		id := -1
+		if idStr != "" {
+			var err error
+			id, err = strconv.Atoi(idStr)
+			if err != nil {
+				http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+				return
+			}
+		}
+
+		tenants, err := app.Tenant.GetAll(id, name)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)

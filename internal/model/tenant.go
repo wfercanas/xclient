@@ -36,11 +36,14 @@ func (m *TenantModel) Create(newTenant NewTenant) (Tenant, error) {
 	return tenant, nil
 }
 
-func (m *TenantModel) GetAll() ([]Tenant, error) {
+func (m *TenantModel) GetAll(id int, name string) ([]Tenant, error) {
 	results, err := m.DB.Query(`
 		SELECT id, name, created_at
 		FROM tenants
-	`)
+		WHERE ($1::int = -1 OR id = $1::int)
+		AND ($2::text IS NULL OR name ILIKE '%' || $2::text || '%')
+	`, id, name)
+
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
