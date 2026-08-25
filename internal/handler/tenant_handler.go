@@ -41,7 +41,7 @@ func GetTenantById(app *config.Application) http.HandlerFunc {
 			return
 		}
 
-		tenant, err := app.Tenant.Get(tenantId)
+		tenant, err := app.Tenant.GetById(tenantId)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)

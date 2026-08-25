@@ -35,7 +35,7 @@ func (m *TenantModel) Create(newTenant NewTenant) (Tenant, error) {
 	return tenant, nil
 }
 
-func (m *TenantModel) Get(id int) (Tenant, error) {
+func (m *TenantModel) GetById(id int) (Tenant, error) {
 	result := m.DB.QueryRow(`
 		SELECT id, name, created_at
 		FROM tenants
