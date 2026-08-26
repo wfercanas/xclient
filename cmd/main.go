@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"log/slog"
-	"net/http"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -24,10 +23,11 @@ func main() {
 	defer db.Close()
 
 	app := config.NewApplication(*logger, db)
+	server := config.NewServer(*addr, router(&app))
 
-	app.Logger.Info("starting server", slog.String("addr", *addr))
+	app.Logger.Info("starting server", slog.String("addr", server.Addr))
 
-	err = http.ListenAndServe(*addr, router(&app))
+	err = server.ListenAndServe()
 	if err != nil {
 		app.Logger.Error(err.Error())
 		os.Exit(1)
