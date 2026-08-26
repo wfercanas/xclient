@@ -10,7 +10,6 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/selsa-inube/iclient-query-service/config"
-	"github.com/selsa-inube/iclient-query-service/internal/handler"
 )
 
 func main() {
@@ -29,16 +28,7 @@ func main() {
 	app := config.NewApplication(*logger, db)
 	app.Logger.Info("starting server", slog.String("addr", *addr))
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /health", handler.Health)
-	mux.HandleFunc("GET /contributions/{id}", handler.GetContributionById(&app))
-
-	mux.HandleFunc("POST /tenants", handler.CreateNewTenant(&app))
-	mux.HandleFunc("GET /tenants/{$}", handler.GetTenants(&app))
-	mux.HandleFunc("GET /tenants/{id}", handler.GetTenantById(&app))
-	mux.HandleFunc("DELETE /tenants/{id}", handler.DeleteTenant(&app))
-
-	err = http.ListenAndServe(*addr, mux)
+	err = http.ListenAndServe(*addr, router(&app))
 	if err != nil {
 		app.Logger.Error(err.Error())
 		os.Exit(1)
