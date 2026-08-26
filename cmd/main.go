@@ -1,9 +1,7 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -26,6 +24,7 @@ func main() {
 	defer db.Close()
 
 	app := config.NewApplication(*logger, db)
+
 	app.Logger.Info("starting server", slog.String("addr", *addr))
 
 	err = http.ListenAndServe(*addr, router(&app))
@@ -33,19 +32,4 @@ func main() {
 		app.Logger.Error(err.Error())
 		os.Exit(1)
 	}
-}
-
-func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, fmt.Errorf("error opening database: %w", err)
-	}
-
-	err = db.Ping()
-	if err != nil {
-		defer db.Close()
-		return nil, fmt.Errorf("error connecting to database: %w", err)
-	}
-
-	return db, nil
 }
