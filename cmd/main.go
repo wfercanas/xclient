@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 
@@ -14,14 +15,14 @@ func main() {
 	dsn := flag.String("dsn", "user=fernando password=Sparkie11 host=localhost port=5432 dbname=xclient sslmode=disable", "Data Source Name")
 	flag.Parse()
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	db, err := openDB(*dsn)
 	if err != nil {
-		logger.Error(err.Error())
+		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 	defer db.Close()
 
+	logger := config.NewLogger(os.Stdout)
 	app := config.NewApplication(*logger, db)
 	server := config.NewServer(*addr, router(&app))
 
