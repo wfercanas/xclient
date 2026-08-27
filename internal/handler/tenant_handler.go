@@ -18,13 +18,13 @@ func CreateNewTenant(app *config.Application) http.HandlerFunc {
 
 		err := json.NewDecoder(r.Body).Decode(&newTenant)
 		if err != nil {
-			http.Error(w, "invalid request body", http.StatusBadRequest)
+			app.Error(w, r, http.StatusBadRequest, err)
 			return
 		}
 
 		tenant, err := app.Tenant.Create(model.NewTenant(newTenant))
 		if err != nil {
-			app.InternalServerError(w, r, err)
+			app.Error(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -44,7 +44,7 @@ func GetTenants(app *config.Application) http.HandlerFunc {
 			var err error
 			id, err = strconv.Atoi(idStr)
 			if err != nil {
-				http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+				app.Error(w, r, http.StatusBadRequest, err)
 				return
 			}
 		}
@@ -52,9 +52,9 @@ func GetTenants(app *config.Application) http.HandlerFunc {
 		tenants, err := app.Tenant.GetAll(id, name)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+				app.Error(w, r, http.StatusNotFound, err)
 			} else {
-				app.InternalServerError(w, r, err)
+				app.Error(w, r, http.StatusInternalServerError, err)
 			}
 			return
 		}
@@ -73,16 +73,16 @@ func GetTenantById(app *config.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tenantId, err := strconv.Atoi(r.PathValue("id"))
 		if err != nil {
-			http.Error(w, "invalid tenant id", http.StatusBadRequest)
+			app.Error(w, r, http.StatusBadRequest, err)
 			return
 		}
 
 		tenant, err := app.Tenant.GetById(tenantId)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+				app.Error(w, r, http.StatusNotFound, err)
 			} else {
-				app.InternalServerError(w, r, err)
+				app.Error(w, r, http.StatusInternalServerError, err)
 			}
 			return
 		}
@@ -96,13 +96,13 @@ func DeleteTenant(app *config.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tenantId, err := strconv.Atoi(r.PathValue("id"))
 		if err != nil {
-			http.Error(w, "invalid tenant id", http.StatusBadRequest)
+			app.Error(w, r, http.StatusBadRequest, err)
 			return
 		}
 
 		err = app.Tenant.Delete(tenantId)
 		if err != nil {
-			app.InternalServerError(w, r, err)
+			app.Error(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
