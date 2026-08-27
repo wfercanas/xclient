@@ -24,7 +24,7 @@ func CreateNewTenant(app *config.Application) http.HandlerFunc {
 
 		tenant, err := app.Tenant.Create(model.NewTenant(newTenant))
 		if err != nil {
-			http.Error(w, "failed to create tenant", http.StatusInternalServerError)
+			app.InternalServerError(w, r, err)
 			return
 		}
 
@@ -53,11 +53,10 @@ func GetTenants(app *config.Application) http.HandlerFunc {
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-				return
 			} else {
-				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-				return
+				app.InternalServerError(w, r, err)
 			}
+			return
 		}
 
 		tenantsDTO := make([]dto.Tenant, len(tenants))
@@ -83,7 +82,7 @@ func GetTenantById(app *config.Application) http.HandlerFunc {
 			if errors.Is(err, sql.ErrNoRows) {
 				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			} else {
-				http.Error(w, "failed to get tenant", http.StatusInternalServerError)
+				app.InternalServerError(w, r, err)
 			}
 			return
 		}
@@ -103,7 +102,7 @@ func DeleteTenant(app *config.Application) http.HandlerFunc {
 
 		err = app.Tenant.Delete(tenantId)
 		if err != nil {
-			http.Error(w, "failed to delete tenant", http.StatusInternalServerError)
+			app.InternalServerError(w, r, err)
 			return
 		}
 
