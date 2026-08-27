@@ -24,7 +24,7 @@ func main() {
 
 	logger := config.NewLogger(os.Stdout)
 	app := config.NewApplication(*logger, db)
-	server := config.NewServer(*addr, router(&app))
+	server := config.NewServer(*addr, router(app))
 
 	app.Logger.Info("starting server", slog.String("addr", server.Addr))
 
