@@ -23,7 +23,7 @@ func main() {
 	defer db.Close()
 
 	logger := config.NewLogger(os.Stdout)
-	app := config.NewApplication(*logger, db)
+	app := config.NewApplication(logger, db)
 	server := config.NewServer(*addr, router(app))
 
 	app.Logger.Info("starting server", slog.String("addr", server.Addr))
