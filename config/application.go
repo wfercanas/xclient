@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log/slog"
 
-	"github.com/selsa-inube/iclient-query-service/internal/model"
+	"github.com/selsa-inube/xclient-service/internal/model"
 )
 
 type Application struct {

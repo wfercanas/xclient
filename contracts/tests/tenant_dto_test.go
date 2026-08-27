@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/selsa-inube/iclient-query-service/contracts/dto"
+	"github.com/selsa-inube/xclient-service/contracts/dto"
 )
 
 func TestTenantEncodeAndDecode(t *testing.T) {

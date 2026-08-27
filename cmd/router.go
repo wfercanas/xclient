@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/selsa-inube/iclient-query-service/config"
-	"github.com/selsa-inube/iclient-query-service/internal/handler"
+	"github.com/selsa-inube/xclient-service/config"
+	"github.com/selsa-inube/xclient-service/internal/handler"
 )
 
 func router(app *config.Application) http.Handler {

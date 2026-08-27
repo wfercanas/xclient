@@ -1,4 +1,4 @@
-module github.com/selsa-inube/iclient-query-service
+module github.com/selsa-inube/xclient-service
 
 go 1.23.3
 

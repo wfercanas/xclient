@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/selsa-inube/iclient-query-service/config"
-	"github.com/selsa-inube/iclient-query-service/contracts/dto"
-	"github.com/selsa-inube/iclient-query-service/internal/model"
+	"github.com/selsa-inube/xclient-service/config"
+	"github.com/selsa-inube/xclient-service/contracts/dto"
+	"github.com/selsa-inube/xclient-service/internal/model"
 )
 
 func CreateNewTenant(app *config.Application) http.HandlerFunc {

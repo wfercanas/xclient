@@ -7,7 +7,7 @@ import (
 	"os"
 
 	_ "github.com/lib/pq"
-	"github.com/selsa-inube/iclient-query-service/config"
+	"github.com/selsa-inube/xclient-service/config"
 )
 
 func main() {

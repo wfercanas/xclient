@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/selsa-inube/iclient-query-service/contracts/dto"
+	"github.com/selsa-inube/xclient-service/contracts/dto"
 )
 
 func TestContributionBeneficiaryJSON(t *testing.T) {
