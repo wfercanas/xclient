@@ -5,6 +5,7 @@ import (
 
 	"github.com/selsa-inube/xclient-service/config"
 	"github.com/selsa-inube/xclient-service/internal/handler"
+	"github.com/selsa-inube/xclient-service/middlewares"
 )
 
 func router(app *config.Application) http.Handler {
@@ -17,5 +18,5 @@ func router(app *config.Application) http.Handler {
 	mux.HandleFunc("GET /tenants/{id}", handler.GetTenantById(app))
 	mux.HandleFunc("DELETE /tenants/{id}", handler.DeleteTenant(app))
 
-	return mux
+	return middlewares.LogRequests(app, mux)
 }
