@@ -25,6 +25,11 @@ func CreateNewCustomer(app *config.Application) http.HandlerFunc {
 			return
 		}
 
+		if newCustomer.CustomerType == "" {
+			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: customer_type"))
+			return
+		}
+
 		customer, err := app.Customer.Create(model.NewCustomer{
 			TenantId:        *newCustomer.TenandId,
 			CustomerType:    newCustomer.CustomerType,
