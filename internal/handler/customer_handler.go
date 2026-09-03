@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/selsa-inube/xclient-service/config"
@@ -19,8 +20,13 @@ func CreateNewCustomer(app *config.Application) http.HandlerFunc {
 			return
 		}
 
+		if newCustomer.TenandId == nil {
+			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: tenant_id"))
+			return
+		}
+
 		customer, err := app.Customer.Create(model.NewCustomer{
-			TenantId:        newCustomer.TenandId,
+			TenantId:        *newCustomer.TenandId,
 			CustomerType:    newCustomer.CustomerType,
 			CustomerId:      newCustomer.CustomerId,
 			Name:            newCustomer.Name,

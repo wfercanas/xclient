@@ -19,7 +19,7 @@ type Customer struct {
 }
 
 type NewCustomer struct {
-	TenandId        int        `json:"tenant_id"`
+	TenandId        *int       `json:"tenant_id"`
 	CustomerType    string     `json:"customer_type"`
 	CustomerId      string     `json:"customer_id"`
 	Name            string     `json:"name"`
