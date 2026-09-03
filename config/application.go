@@ -11,6 +11,7 @@ type Application struct {
 	Logger       *slog.Logger
 	Contribution *model.ContributionModel
 	Tenant       *model.TenantModel
+	Customer     *model.CustomerModel
 }
 
 func NewApplication(logger *slog.Logger, db *sql.DB) *Application {
@@ -18,5 +19,6 @@ func NewApplication(logger *slog.Logger, db *sql.DB) *Application {
 		Logger:       logger,
 		Contribution: &model.ContributionModel{DB: db},
 		Tenant:       &model.TenantModel{DB: db},
+		Customer:     &model.CustomerModel{DB: db},
 	}
 }

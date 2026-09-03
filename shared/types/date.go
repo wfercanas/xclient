@@ -5,25 +5,23 @@ import (
 	"time"
 )
 
-type Date struct {
-	value string
-}
+type Date string
 
 func NewDate(t time.Time) Date {
-	return Date{value: t.Format("2006-01-02")}
+	return Date(t.Format("2006-01-02"))
 }
 
 func ToDate(s string) (Date, error) {
 	t, err := time.Parse("2006-01-02", s)
 	if err != nil {
-		return Date{}, err
+		return "", err
 	}
 
 	return NewDate(t), nil
 }
 
 func (d *Date) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&d.value)
+	return json.Marshal(&d)
 }
 
 func (d *Date) UnmarshalJSON(data []byte) error {
@@ -33,12 +31,11 @@ func (d *Date) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	_, err = time.Parse("2006-01-02", s)
+	t, err := time.Parse("2006-01-02", s)
 	if err != nil {
 		return err
 	}
 
-	d.value = s
-
+	*d = NewDate(t)
 	return nil
 }
