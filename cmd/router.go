@@ -20,6 +20,7 @@ func router(app *config.Application) http.Handler {
 
 	mux.HandleFunc("POST /customers", handler.CreateNewCustomer(app))
 	mux.HandleFunc("GET /customers/{id}", handler.GetCustomerById(app))
+	mux.HandleFunc("DELETE /customers/{id}", handler.DeleteCustomer(app))
 
 	return middlewares.LogRequests(app, mux)
 }

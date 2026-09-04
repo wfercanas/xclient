@@ -73,3 +73,12 @@ func (m *CustomerModel) GetById(customerId int) (Customer, error) {
 	customer.AssociationDate = types.NewDate(associationDate)
 	return customer, nil
 }
+
+func (m *CustomerModel) Delete(customerId int) error {
+	_, err := m.DB.Exec(`
+		DELETE FROM customers
+		WHERE id = $1
+	`, customerId)
+
+	return err
+}

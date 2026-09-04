@@ -89,9 +89,5 @@ func (m *TenantModel) Delete(id int) error {
 		WHERE id = $1
 	`, id)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }

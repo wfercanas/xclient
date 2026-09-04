@@ -110,3 +110,22 @@ func GetCustomerById(app *config.Application) http.HandlerFunc {
 		json.NewEncoder(w).Encode(dto.Customer(customer))
 	}
 }
+
+func DeleteCustomer(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		customerId, err := strconv.Atoi(r.PathValue("id"))
+		if err != nil {
+			app.Error(w, r, http.StatusBadRequest, err)
+			return
+		}
+
+		err = app.Customer.Delete(customerId)
+		if err != nil {
+			app.Error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+		w.Header().Add("Content-Type", "application/json")
+	}
+}
