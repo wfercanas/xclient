@@ -30,6 +30,26 @@ func CreateNewCustomer(app *config.Application) http.HandlerFunc {
 			return
 		}
 
+		if newCustomer.CustomerId == "" {
+			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: customer_id"))
+			return
+		}
+
+		if newCustomer.Name == "" {
+			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: name"))
+			return
+		}
+
+		if newCustomer.Status == "" {
+			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: status"))
+			return
+		}
+
+		if newCustomer.AssociationDate == "" {
+			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: association_date"))
+			return
+		}
+
 		customer, err := app.Customer.Create(model.NewCustomer{
 			TenantId:        *newCustomer.TenandId,
 			CustomerType:    newCustomer.CustomerType,
