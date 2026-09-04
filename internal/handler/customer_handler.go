@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/selsa-inube/xclient-service/config"
@@ -77,6 +79,29 @@ func CreateNewCustomer(app *config.Application) http.HandlerFunc {
 			AssociationDate: newCustomer.AssociationDate,
 		})
 		if err != nil {
+			app.Error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(dto.Customer(customer))
+	}
+}
+
+func GetCustomerById(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		customerId, err := strconv.Atoi(r.PathValue("id"))
+		if err != nil {
+			app.Error(w, r, http.StatusBadRequest, err)
+			return
+		}
+
+		customer, err := app.Customer.GetById(customerId)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				app.Error(w, r, http.StatusNotFound, err)
+				return
+			}
 			app.Error(w, r, http.StatusInternalServerError, err)
 			return
 		}

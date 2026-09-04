@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/selsa-inube/xclient-service/shared/types"
@@ -44,6 +45,29 @@ func (m *CustomerModel) Create(newCustomer NewCustomer) (Customer, error) {
 	err := result.Scan(&customer.Id, &customer.TenantId, &customer.CustomerType, &customer.CustomerId, &customer.Name, &customer.Status, &associationDate, &customer.CreatedAt, &customer.UpdatedAt)
 	if err != nil {
 		return Customer{}, err
+	}
+
+	customer.AssociationDate = types.NewDate(associationDate)
+	return customer, nil
+}
+
+func (m *CustomerModel) GetById(customerId int) (Customer, error) {
+	result := m.DB.QueryRow(`
+		SELECT id, tenant_id, customer_type, customer_id, name, status, association_date, created_at, updated_at
+		FROM customers
+		WHERE id = $1
+	`, customerId)
+
+	var customer Customer
+	var associationDate time.Time
+
+	err := result.Scan(&customer.Id, &customer.TenantId, &customer.CustomerType, &customer.CustomerId, &customer.Name, &customer.Status, &associationDate, &customer.CreatedAt, &customer.UpdatedAt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return Customer{}, sql.ErrNoRows
+		} else {
+			return Customer{}, err
+		}
 	}
 
 	customer.AssociationDate = types.NewDate(associationDate)
