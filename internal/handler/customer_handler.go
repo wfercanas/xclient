@@ -12,6 +12,46 @@ import (
 	"github.com/selsa-inube/xclient-service/shared/types"
 )
 
+func validateNewCustomer(newCustomer dto.NewCustomer) error {
+	if newCustomer.TenandId == nil {
+		return errors.New("missing property: tenant_id")
+	}
+
+	if newCustomer.CustomerType == "" {
+		return errors.New("missing property: customer_type")
+	}
+
+	if newCustomer.CustomerType != "person" && newCustomer.CustomerType != "company" {
+		return errors.New("invalid property: customer_type should be equal to 'person' or 'company'")
+	}
+
+	if newCustomer.CustomerId == "" {
+		return errors.New("missing property: customer_id")
+	}
+
+	if newCustomer.Name == "" {
+		return errors.New("missing property: name")
+	}
+
+	if newCustomer.Status == "" {
+		return errors.New("missing property: status")
+	}
+
+	if newCustomer.Status != "active" && newCustomer.Status != "retired" && newCustomer.Status != "retiring" && newCustomer.Status != "inactive" {
+		return errors.New("invalid property: status should be equal to 'active', 'retired', 'retiring' or 'inactive'")
+	}
+
+	if newCustomer.AssociationDate == "" {
+		return errors.New("missing property: association_date")
+	}
+
+	if newCustomer.AssociationDate > types.NewDate(time.Now()) {
+		return errors.New("invalid property: association_date should be lower or equal to the present day")
+	}
+
+	return nil
+}
+
 func CreateNewCustomer(app *config.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var newCustomer dto.NewCustomer
@@ -22,48 +62,9 @@ func CreateNewCustomer(app *config.Application) http.HandlerFunc {
 			return
 		}
 
-		if newCustomer.TenandId == nil {
-			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: tenant_id"))
-			return
-		}
-
-		if newCustomer.CustomerType == "" {
-			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: customer_type"))
-			return
-		}
-
-		if newCustomer.CustomerType != "person" && newCustomer.CustomerType != "company" {
-			app.Error(w, r, http.StatusBadRequest, errors.New("invalid property: customer_type"))
-			return
-		}
-
-		if newCustomer.CustomerId == "" {
-			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: customer_id"))
-			return
-		}
-
-		if newCustomer.Name == "" {
-			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: name"))
-			return
-		}
-
-		if newCustomer.Status == "" {
-			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: status"))
-			return
-		}
-
-		if newCustomer.Status != "active" && newCustomer.Status != "retired" && newCustomer.Status != "retiring" && newCustomer.Status != "inactive" {
-			app.Error(w, r, http.StatusBadRequest, errors.New("invalid property: status"))
-			return
-		}
-
-		if newCustomer.AssociationDate == "" {
-			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: association_date"))
-			return
-		}
-
-		if newCustomer.AssociationDate > types.NewDate(time.Now()) {
-			app.Error(w, r, http.StatusBadRequest, errors.New("invalid property: association_date"))
+		err = validateNewCustomer(newCustomer)
+		if err != nil {
+			app.Error(w, r, http.StatusBadRequest, err)
 			return
 		}
 
