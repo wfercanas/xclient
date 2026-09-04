@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/selsa-inube/xclient-service/config"
 	"github.com/selsa-inube/xclient-service/contracts/dto"
 	"github.com/selsa-inube/xclient-service/internal/model"
+	"github.com/selsa-inube/xclient-service/shared/types"
 )
 
 func CreateNewCustomer(app *config.Application) http.HandlerFunc {
@@ -30,6 +32,11 @@ func CreateNewCustomer(app *config.Application) http.HandlerFunc {
 			return
 		}
 
+		if newCustomer.CustomerType != "person" && newCustomer.CustomerType != "company" {
+			app.Error(w, r, http.StatusBadRequest, errors.New("invalid property: customer_type"))
+			return
+		}
+
 		if newCustomer.CustomerId == "" {
 			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: customer_id"))
 			return
@@ -45,8 +52,18 @@ func CreateNewCustomer(app *config.Application) http.HandlerFunc {
 			return
 		}
 
+		if newCustomer.Status != "active" && newCustomer.Status != "retired" && newCustomer.Status != "retiring" && newCustomer.Status != "inactive" {
+			app.Error(w, r, http.StatusBadRequest, errors.New("invalid property: status"))
+			return
+		}
+
 		if newCustomer.AssociationDate == "" {
 			app.Error(w, r, http.StatusBadRequest, errors.New("missing property: association_date"))
+			return
+		}
+
+		if newCustomer.AssociationDate > types.NewDate(time.Now()) {
+			app.Error(w, r, http.StatusBadRequest, errors.New("invalid property: association_date"))
 			return
 		}
 
