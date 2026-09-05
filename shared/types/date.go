@@ -21,7 +21,7 @@ func ToDate(s string) (Date, error) {
 }
 
 func (d *Date) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&d)
+	return json.Marshal(*d)
 }
 
 func (d *Date) UnmarshalJSON(data []byte) error {

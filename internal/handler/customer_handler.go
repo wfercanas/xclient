@@ -111,6 +111,61 @@ func GetCustomerById(app *config.Application) http.HandlerFunc {
 	}
 }
 
+func GetCustomers(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		params := r.URL.Query()
+		idStr := params.Get("id")
+		tenantIdStr := params.Get("tenant_id")
+		customerType := params.Get("customer_type")
+		customerId := params.Get("customer_id")
+		name := params.Get("name")
+		status := params.Get("status")
+
+		id := -1
+		if idStr != "" {
+			var err error
+			id, err = strconv.Atoi(idStr)
+			if err != nil {
+				app.Error(w, r, http.StatusBadRequest, err)
+				return
+			}
+		}
+
+		tenantId := -1
+		if tenantIdStr != "" {
+			var err error
+			tenantId, err = strconv.Atoi(tenantIdStr)
+			if err != nil {
+				app.Error(w, r, http.StatusBadRequest, err)
+				return
+			}
+		}
+
+		if id == -1 && tenantId == -1 {
+			app.Error(w, r, http.StatusBadRequest, errors.New("missing param: id or tenant_id is mandatory"))
+			return
+		}
+
+		customers, err := app.Customer.GetAll(id, tenantId, customerType, customerId, name, status)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				app.Error(w, r, http.StatusNotFound, err)
+				return
+			}
+			app.Error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		customersDTO := make([]dto.Customer, len(customers))
+		for i, customer := range customers {
+			customersDTO[i] = dto.Customer(customer)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(customersDTO)
+	}
+}
+
 func DeleteCustomer(app *config.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		customerId, err := strconv.Atoi(r.PathValue("id"))
